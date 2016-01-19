@@ -1,0 +1,2 @@
+# GDM
+gradient descent method

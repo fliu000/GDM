@@ -1,0 +1,35 @@
+function result = gdm_single1(d) 
+% Loading the dataset
+dataSet = load('DataSet1.rtf');
+
+% Storing the values in seperate vectors
+x = dataSet(:, 1)
+y = dataSet(:, 2)
+
+E =  30; % limiting elasticity = d(PI)/d(lngamma) (mN/m), which is a monotonic function of surface coverage and depends upon the actual value of surface excess coverage.
+D =  2.5 * 10^(-10); % diffusion coefficient (m2/s)
+w = 2 * pi * 0.005; % angular velocity (s) = 2 * pi * f
+k =  1.44 * 10^(-17); % adsorption constant (m3/molecule)
+gamma_inf =  3.2 * 10^18; % surface excess coverage (molecules/m2), which is 3.2 molecules/nm^2
+% In DataSet1, the unit of concentration is g/L, and that of complex
+% modulus is mN/m. DataSet 1 is at 0.005Hz.
+
+x1 = x / 0.75 * 6.022 * 10^23 % surfactant concentration (molecule/m3), calculated from (g/L)
+% f(x) = E * (k * gamma_inf * sqrt(1i * w / D)) / (k * gamma_inf * sqrt(1i * w / D) + (1 + k * x)^2)
+d = (1 + k * x1) * sqrt(D / (2 * w * k * gamma_inf)) % d is the dimensionless parameter to simplify the original equation
+m = E * (1 + d + 1i * d)/(1 + 2 * d + 2 * sqrt(d.^2)) % m is complex modulus (mN/m)
+
+result = sqrt((real(m))^2 + (imag(m))^2); % |E|
+
+% Plotting the dataset
+figure;
+plot(log(x), result(:,9), 'rx', 'MarkerSize', 10);
+hold on;
+plot (log(x), y, 'bs', 'MarkerSize', 10);
+legend('predicted', 'measured');
+grid on;
+xlabel('Concentration (g/L)');
+ylabel('Complex Modulus (mN/m)');
+title('at frequency of 0.005Hz');
+
+end
